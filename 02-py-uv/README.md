@@ -40,9 +40,9 @@ uv init test
 
 ```bash
 uv add openai-agents
-
+```
 
 ```bash
 uv run uv run main.py
-
+```
 
