@@ -42,6 +42,7 @@ uv init test
 uv add openai-agents
 ```
 
+**run project**
 ```bash
 uv run uv run main.py
 ```
