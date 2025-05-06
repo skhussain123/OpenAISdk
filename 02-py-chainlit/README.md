@@ -9,22 +9,50 @@
 - Minimal setup required
 - Inspired by modern web frameworks
 
-## Setup
-
-Install the package using pip:
+## Install the package using pip:
 
 ```bash
 pip install uv
+```
 
+```bash
+uv add chainlit 
+```
 
 
 ```bash
-uv init --package example-pkg
+uv run chainlit hello
+```
+**create environment Automatic**
 
 
 ```bash
-uv run example-pkg
+uv run chainlit run chatbot.py -w
+```
 
 
-create environment Automatic
+#### create chatbot.py file in root directory and use this code 
 
+```bash
+import chainlit as cl
+
+@cl.on_message
+async def main(message: cl.Message):
+    # Our custom logic goes here...
+    # Send a fake response back to the user
+    await cl.Message(
+        content=f"Received: {message.content}",
+    ).send()
+```
+
+**then run project**
+
+```bash
+uv run chainlit run chatbot.py -w
+```
+
+**or**
+
+```bash
+uv run chainlit run chatbot.py -w --port 8500
+``` 
