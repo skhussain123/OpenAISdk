@@ -36,9 +36,13 @@ uv run example-pkg
 uv init test
 ```
 
-**download lirary external**
+**download library external**
 
 ```bash
 uv add openai-agents
+
+
+```bash
+uv run hello.py
 
 
