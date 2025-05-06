@@ -16,6 +16,11 @@ pip install uv
 ```
 
 ```bash
+uv init hello_chainlit
+```
+
+
+```bash
 uv add chainlit 
 ```
 
