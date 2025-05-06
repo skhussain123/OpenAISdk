@@ -27,11 +27,18 @@ uv init --package example-pkg
 uv run example-pkg
 
 ```
-create environment Automatic
+**create environment Automatic**
 
 
 ## Method 2: Create UV Project Using a Package
 
 ```bash
 uv init test
+```
+
+**download lirary external**
+
+```bash
+uv add openai-agents
+
 
