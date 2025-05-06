@@ -13,21 +13,20 @@
 
 ## Method 1: Create UV Project Using a Package
 
-### Step 1: Install UV
+### Step 1: Install UV (create environment Automatic)
 
 ```bash
 pip install uv
-
+```
 
 ```bash
 uv init --package example-pkg
-
+```
 
 ```bash
 uv run example-pkg
 
 ```
-**create environment Automatic**
 
 
 ## Method 2: Create UV Project Using a Package
