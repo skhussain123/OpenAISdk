@@ -43,6 +43,6 @@ uv add openai-agents
 
 
 ```bash
-uv run hello.py
+uv run uv run main.py
 
 
