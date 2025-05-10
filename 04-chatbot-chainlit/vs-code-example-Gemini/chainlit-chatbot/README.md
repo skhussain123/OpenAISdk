@@ -32,9 +32,9 @@ uv add openai-agents
 uv run chainlit run hello.py -w --port 8500
 ```
 
-Documentation
+### Documentation
 
-# Chainlit library ko import karta hai. Yeh chatbot ke UI aur lifecycle ko control karta hai (like on start, on message, etc).
+Chainlit library ko import karta hai. Yeh chatbot ke UI aur lifecycle ko control karta hai (like on start, on message, etc).
 ```bash
 import chainlit as cl 
 ```
