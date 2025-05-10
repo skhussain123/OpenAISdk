@@ -1,4 +1,6 @@
-import chainlit as cl
+import chainlit as cl # Chainlit library ko import karta hai. Yeh chatbot ke UI aur lifecycle ko control karta hai (like on start, on message, etc).
+
+
 import os
 from dotenv import load_dotenv
 from agents import Agent, Runner, AsyncOpenAI, OpenAIChatCompletionsModel
