@@ -58,6 +58,7 @@ Get Google Gemini API key from https://aistudio.google.com/prompts/new_chat
 Get GitHub OAuth Client ID and Client Secret.(Goto Github profile and goto this folder)
 
 profile/ settings/ Developer settings/ OAuthApp / new OAuth app
+![Alt text](images/img7.png)
 ![Alt text](images/img8.png)
 
 
