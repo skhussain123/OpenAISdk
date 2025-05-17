@@ -53,14 +53,21 @@ http://localhost:8000
 * CHAINLIT_AUTH_SECRET=your_chainlit_auth_secret
 
 
-Get Google Gemini API key from here
+Get Google Gemini API key from https://aistudio.google.com/prompts/new_chat
 
-Get GitHub OAuth Client ID and Client Secret from here
+Get GitHub OAuth Client ID and Client Secret.(Goto Github profile and goto this folder)
+
+profile/ settings/ Developer settings/ OAuthApp / new OAuth app
+![Alt text](images/img8.png)
+
+
 
 **Generate chainlit auth secret with the following command:**
 ```bash
 chainlit create-secret
 ```
+Copy the generated values and paste it in the .env file.
+
 
 ### 7️⃣ Create chainlit.yaml file
 Create a chainlit.yaml file in the root directory of the project and add the following code.
