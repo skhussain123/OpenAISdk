@@ -19,7 +19,7 @@ cd chainlit-chatbot
 
 ### 2. Add chainlit
 ```bash 
-cd add chainlit
+uv add chainlit
 ```
 
 ### 3. Add openai-agents
