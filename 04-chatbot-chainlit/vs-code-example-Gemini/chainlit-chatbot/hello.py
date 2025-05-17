@@ -1,10 +1,6 @@
-
-import chainlit as cl 
+import chainlit as cl
 import os
 from dotenv import load_dotenv
-# os module environment variables access karne ke liye.
-# load_dotenv() .env file se environment variables ko load karta hai (jaise API keys)
-
 from agents import Agent, Runner, AsyncOpenAI, OpenAIChatCompletionsModel
 from agents.run import RunConfig
 from openai.types.responses import ResponseTextDeltaEvent
