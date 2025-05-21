@@ -16,38 +16,35 @@ genai.configure(api_key=gemini_api_key)
 
 # Initialize Gemini model
 model = genai.GenerativeModel(
-    model_name="gemini-2.0-flash"  # Using Gemini's flash model for faster responses
+    model_name="gemini-2.0-flash"
 )
 
 
 # Decorator to handle OAuth callback from GitHub
 @cl.oauth_callback
 def oauth_callback(
-    provider_id: str,  # ID of the OAuth provider (GitHub)
-    token: str,  # OAuth access token
-    raw_user_data: Dict[str, str],  # User data from GitHub
-    default_user: cl.User,  # Default user object from Chainlit
-) -> Optional[cl.User]:  # Return User object or None
+    provider_id: str,
+    token: str, 
+    raw_user_data: Dict[str, str],
+    default_user: cl.User,
+) -> Optional[cl.User]:
     """
     Handle the OAuth callback from GitHub
     Return the user object if authentication is successful, None otherwise
     """
 
-    print(f"Provider: {provider_id}")  # Print provider ID for debugging
-    print(f"User data: {raw_user_data}")  # Print user data for debugging
-
-    return default_user  # Return the default user object
+    return default_user 
 
 
 # Handler for when a new chat session starts
 @cl.on_chat_start
 async def handle_chat_start():
 
-    cl.user_session.set("history", [])  # Initialize empty chat history
+    cl.user_session.set("history", []) 
 
     await cl.Message(
         content="Hello! How can I help you today?"
-    ).send()  # Send welcome message
+    ).send()
 
 
 # Handler for incoming chat messages
@@ -60,6 +57,7 @@ async def handle_message(message: cl.Message):
         {"role": "user", "content": message.content}
     )  # Add user message to history
 
+
     # Format chat history for Gemini model
     formatted_history = []
     for msg in history:
@@ -68,15 +66,17 @@ async def handle_message(message: cl.Message):
             {"role": role, "parts": [{"text": msg["content"]}]}
         )  # Format message
 
-    response = model.generate_content(formatted_history)  # Get response from Gemini
+    response = model.generate_content(formatted_history)
 
     response_text = (
         response.text if hasattr(response, "text") else ""
-    )  # Extract response text safely
+    )
 
     history.append(
         {"role": "assistant", "content": response_text}
-    )  # Add assistant response to history
-    cl.user_session.set("history", history)  # Update session history
+    )  
+    
+    # Add assistant response to history
+    cl.user_session.set("history", history)
 
-    await cl.Message(content=response_text).send()  # Send response to user
+    await cl.Message(content=response_text).send()
