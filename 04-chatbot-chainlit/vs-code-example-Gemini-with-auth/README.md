@@ -89,12 +89,17 @@ auth:
   required: true
   providers: 
     - github
+    - google
 
 # OAuth Configuration
 oauth_providers:
   github:
     client_id: ${OAUTH_GITHUB_CLIENT_ID}
     client_secret: ${OAUTH_GITHUB_CLIENT_SECRET} 
+  google:
+    client_id: ${OAUTH_GOOGLE_CLIENT_ID}
+    client_secret: ${OAUTH_GOOGLE_CLIENT_SECRET}   
+
 
 ```    
 
