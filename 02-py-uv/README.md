@@ -8,7 +8,6 @@
 - Compatible with existing Python tools and workflows
 - Built-in virtual environment management
 - Support for modern packaging standards
-- Reliable dependency locking and reproducible environments
 - Memory-efficient operation, especially for large projects
 
 ---
