@@ -4,10 +4,12 @@
 
 ## Features
 
-- Fast and lightweight
-- Asynchronous by design
-- Minimal setup required
-- Inspired by modern web frameworks
+- Lightning-fast package installation and dependency resolution
+- Compatible with existing Python tools and workflows
+- Built-in virtual environment management
+- Support for modern packaging standards
+- Reliable dependency locking and reproducible environments
+- Memory-efficient operation, especially for large projects
 
 ---
 
