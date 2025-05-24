@@ -46,3 +46,8 @@ uv add openai-agents
 uv run uv run main.py
 ```
 
+| Command                         | Action                                                              |
+| ------------------------------- | ------------------------------------------------------------------- |
+| `uv init --package example-pkg` | Creates a project and installs the `example-pkg` Python package.    |
+| `uv init example-pkg`           | Creates a folder/project named `example-pkg`, no package installed. |
+
