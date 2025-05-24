@@ -1,6 +1,6 @@
 # What is the UV?
 
-**UV** UV is a modern, high-performance Python package manage
+**UV**  is a modern, high-performance Python package manage
 
 ## Features
 
