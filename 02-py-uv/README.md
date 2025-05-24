@@ -1,6 +1,6 @@
 # What is the UV?
 
-**UV** is a high-performance Python web framework or server designed for speed and simplicity. It's ideal for building fast APIs or web apps with minimal setup. Inspired by event-driven frameworks like Node.js and Uvicorn, UV allows you to build modern async applications in Python with ease.
+**UV** UV is a modern, high-performance Python package manage
 
 ## Features
 
