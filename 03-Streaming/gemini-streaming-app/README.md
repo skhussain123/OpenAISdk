@@ -53,3 +53,18 @@ https://aistudio.google.com/prompts/new_chat
 ```bash
 uv run main.py
 ```
+
+
+
+## Code Documentation
+The main.py file contains an async Python script that sends a prompt to the Google Gemini API and prints the streamed response token by token in real time.
+
+
+### 1. Load Environment Variables
+
+This loads your .env file which should contain your GEMINI_API_KEY.
+```bash
+from dotenv import load_dotenv
+load_dotenv()
+
+```

@@ -33,7 +33,7 @@ agent1 = Agent(
 
 async def main():
     try:
-        result = Runner.run_streamed(  # ✅ don't await here
+        result = Runner.run_streamed(
             agent1,
             input="Write a blog in 500 words",
             run_config=config,
