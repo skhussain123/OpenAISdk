@@ -49,3 +49,7 @@ uv add openai-agents python-dotenv
 https://aistudio.google.com/prompts/new_chat
 
 
+4. **Run Project:**
+```bash
+uv run main.py
+```
