@@ -45,7 +45,7 @@ uv add openai-agents python-dotenv
 ```
 
 
-3. **Creare Api using Google Ai Studio:**
+3. **Creare Api using Google Ai Studio:** <br>
 https://aistudio.google.com/prompts/new_chat
 
 
