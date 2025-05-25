@@ -3,9 +3,9 @@
 ## This project uses the Free Models available on OpenRouter
 
 
-Signup at OpenRouter : https://openrouter.ai/
-Create an API Key : https://openrouter.ai/settings/keys
-Select a Free Model (you can continue as we are using a free model here) : https://openrouter.ai/models
+Signup at OpenRouter : https://openrouter.ai/<br>
+Create an API Key : https://openrouter.ai/settings/keys<br>
+Select a Free Model (you can continue as we are using a free model here) : https://openrouter.ai/models<br>
 
 ### Create Project
 ```bash
