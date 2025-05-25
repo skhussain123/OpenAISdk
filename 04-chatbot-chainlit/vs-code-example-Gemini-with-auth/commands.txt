@@ -1,5 +1,0 @@
-
-
-
-
-uv pip install openai-agents
