@@ -35,7 +35,7 @@ async def main():
     try:
         result = Runner.run_streamed(
             agent1,
-            input="Write a blog in 500 words",
+            input="How AI is Changing the World in 2025",
             run_config=config,
         )
 
