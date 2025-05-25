@@ -21,3 +21,15 @@ The evidence leans toward OpenRouter supporting function calling (also known as 
 
 ### Hosting Models: Proxy or Host?
 It seems likely that OpenRouter acts as a proxy, routing API requests to models hosted by third-party providers rather than hosting the models itself. This approach allows access to over 200 models without the infrastructure costs of hosting, with OpenRouter handling translations and authentications.
+
+
+| **Feature**             | **Description**                                                                                     |
+| ----------------------- | --------------------------------------------------------------------------------------------------- |
+| **User Interface**      | Includes a chatroom to interact with LLMs and tools for managing user accounts.                     |
+| **API Compatibility**   | Works with the OpenAI Chat Completion API and supports the OpenAI SDK.                              |
+| **Function Calling**    | Allows calling tools/functions, standardized across compatible models/providers.                    |
+| **Model Hosting**       | Functions as a proxy that routes requests to third-party providers; it does not host models itself. |
+| **Pricing Model**       | Pay-per-use pricing based on tokens; some models are free; pricing is transparent.                  |
+| **Additional Features** | Includes a playground for testing, supports streaming, and offers optional prompt logging.          |
+
+
