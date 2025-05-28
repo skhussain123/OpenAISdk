@@ -6,6 +6,9 @@ By default, agents produce plain text (i.e. str) outputs. If you want the agent 
 ## install Packages
 uv add openai-agents
 
+uv add pydantic
+pip install pydantic
+
 
 # Pydantic
 Pydantic is the most widely used data validation library for Python.
