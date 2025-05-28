@@ -4,7 +4,7 @@ By default, agents produce plain text (i.e. str) outputs. If you want the agent 
 [Official Documentation..](https://docs.pydantic.dev/latest/)
 
 ## install Packages
-uv add openai-agents
+uv add openai-agents python-dotenv
 
 uv add pydantic
 pip install pydantic
