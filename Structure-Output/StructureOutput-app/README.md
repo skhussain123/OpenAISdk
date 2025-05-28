@@ -11,33 +11,12 @@ Pydantic is the most widely used data validation library for Python.
 ## Why use Pydantic?
 The schema that Pydantic validates against is generally defined by Python type hints.
 
-### Type hints powering schema validation
+* Powered by type hints — with Pydantic, schema validation and serialization are controlled by type annotations; less to learn, less code to write, and seamless integration with your IDE and static analysis tools. Learn more…
+* Speed — Pydantic's core validation logic is written in Rust. As a result, Pydantic is among the fastest data validation libraries for Python. Learn more…
+* JSON Schema — Pydantic models can emit JSON Schema, allowing for easy integration with other tools. Learn more…
+* Strict and Lax mode — Pydantic can run in either strict mode (where data is not converted) or lax mode where Pydantic tries to coerce data to the correct type where appropriate. Learn more…
+Dataclasses, TypedDicts and more — Pydantic supports validation of many standard library types including dataclass and TypedDict. Learn more…
+* Customisation — Pydantic allows custom validators and serializers to alter how data is processed in many powerful ways. Learn more…
+* Ecosystem — around 8,000 packages on PyPI use Pydantic, including massively popular libraries like FastAPI, huggingface, Django Ninja, SQLModel, & LangChain. Learn more…
+* Battle tested — Pydantic is downloaded over 360M times/month and is used by all FAANG companies and 20 of the 25 largest companies on NASDAQ. If you're trying to do something with Pydantic, someone else has probably already done it. Learn more…
 
-Type hints are great for this since, if you're writing modern Python, you already know how to use them. Using type hints also means that Pydantic integrates well with static typing tools (like mypy and Pyright) and IDEs (like PyCharm and VSCode).
-
-```bash
-from typing import Annotated, Literal
-
-from annotated_types import Gt
-
-from pydantic import BaseModel
-
-
-class Fruit(BaseModel):
-    name: str  
-    color: Literal['red', 'green']  
-    weight: Annotated[float, Gt(0)]  
-    bazam: dict[str, list[tuple[int, bool, float]]]  
-
-
-print(
-    Fruit(
-        name='Apple',
-        color='red',
-        weight=4.2,
-        bazam={'foobar': [(1, True, 0.1)]},
-    )
-)
-#> name='Apple' color='red' weight=4.2 bazam={'foobar': [(1, True, 0.1)]}
-
-```
