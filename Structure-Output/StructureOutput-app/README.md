@@ -11,6 +11,8 @@ Pydantic is the most widely used data validation library for Python.
 ## Why use Pydantic?
 The schema that Pydantic validates against is generally defined by Python type hints.
 
+### Type hints powering schema validation
+
 Type hints are great for this since, if you're writing modern Python, you already know how to use them. Using type hints also means that Pydantic integrates well with static typing tools (like mypy and Pyright) and IDEs (like PyCharm and VSCode).
 
 ```bash
