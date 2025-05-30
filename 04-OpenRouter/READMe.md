@@ -31,4 +31,3 @@ It seems likely that OpenRouter acts as a proxy, routing API requests to models 
 | **Pricing Model**       | Pay-per-use pricing based on tokens; some models are free; pricing is transparent.                  |
 | **Additional Features** | Includes a playground for testing, supports streaming, and offers optional prompt logging.          |
 
-

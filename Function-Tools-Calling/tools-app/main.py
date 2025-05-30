@@ -7,32 +7,39 @@ from agents.run import RunConfig
 from tavily import TavilyClient
 
 
+
 # Load the environment variables from the .env file
 load_dotenv()
 
 gemini_api_key = os.getenv("GEMINI_API_KEY")
-
-
-import requests
-
 client = TavilyClient("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")
 
 
+
 @function_tool
-def live_Search(query: str) -> str:
-    response = client.search(query=query)
-    top_results = response.get("results", [])[:3]
-    if not top_results:
-        return "No results found."
-    results_text = ""
-    for r in top_results:
-        results_text += f"{r.get('title')} - {r.get('url')}\n"
-    return results_text
+def web_search(query: str) -> str:
+    """
+    Perform a real-time web search using the Tavily API and return top 3 results.
+    """
+    try:
+        response = client.search(query=query)
+        top_results = response.get("results", [])[:3]
+        if not top_results:
+            return "No results found."
+        
+        results_text = "\n".join(f"{r.get('title')} - {r.get('url')}" for r in top_results)
+        return results_text
+    
+    except Exception as e:
+        return f"Search failed: {str(e)}"
+    
 
 
 # Check if the API key is present; if not, raise an error
 if not gemini_api_key:
     raise ValueError("GEMINI_API_KEY is not set. Please ensure it is defined in your .env file.")
+
+
 
 
 external_client = AsyncOpenAI(
@@ -54,18 +61,17 @@ config = RunConfig(
 
 agent: Agent = Agent(
     name="Assistant", 
-     instructions="""
-        You are a helpful assistant. If the user asks something that requires **real-time data** 
+    instructions="""
+        You are a helpful assistant. If the user asks something that requires real-time data 
         like news, weather, or stock prices — and you don't know the answer — 
-        call the `live_Search` tool to get it from the internet.
+        call the `web_search` tool to get it from the internet.
     """,
     model=model,
-    tools=[live_Search],  # Registering the tool # type: ignore
+    tools=[web_search]
     
     )
 
 # # Running the agent in synchronous mode
-
 query = input('Enter Your Query : ')
 
 result = Runner.run_sync(
