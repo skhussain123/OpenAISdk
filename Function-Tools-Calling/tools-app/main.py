@@ -78,7 +78,6 @@ model = OpenAIChatCompletionsModel(
     openai_client=external_client
 )
 
-# # RunConfig object is created which defines the model and the provider
 config = RunConfig(
     model=model,
     model_provider=external_client,
