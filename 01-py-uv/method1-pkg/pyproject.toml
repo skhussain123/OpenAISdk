@@ -1,0 +1,17 @@
+[project]
+name = "method1-pkg"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "skhussain123", email = "hk0527075@example.com" }
+]
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+method1-pkg = "method1_pkg:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

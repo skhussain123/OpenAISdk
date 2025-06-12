@@ -20,3 +20,7 @@ Supports logging to S3, GCS, Langfuse, and metrics with Prometheus, Datadog, etc
 
 5. 🔐 Team & User Management (Enterprise)
 Features like SSO, JWT Auth, and organization-level permissions.
+
+```bash
+pip install litellm
+```
