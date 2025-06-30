@@ -2,9 +2,9 @@
 
 # Function And Tool Calling
 
-uv add openai-agents
-uv add python-dotenv
-uv add tavily-python
+* uv add openai-agents
+* uv add python-dotenv
+* uv add tavily-python
 
 
 ### Create APi Keys
@@ -13,8 +13,7 @@ https://openweathermap.org/api
 
 
 ### Video Lecture Guide
-comming soon
-
+https://youtu.be/Yx80b6DqnZo?si=c9I9G8Nvw6eyjRVu
 
 
 
