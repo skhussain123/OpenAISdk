@@ -650,12 +650,16 @@ wheels = [
 ]
 
 [[package]]
-name = "web-search-app"
+name = "weather-updated-app"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "openai-agents" },
+    { name = "python-dotenv" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "openai-agents", specifier = ">=0.1.0" }]
+requires-dist = [
+    { name = "openai-agents", specifier = ">=0.1.0" },
+    { name = "python-dotenv", specifier = ">=1.1.1" },
+]
