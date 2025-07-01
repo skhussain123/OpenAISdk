@@ -3,4 +3,5 @@
 
 * uv add openai-agents
 * uv add python-dotenv
+* uv add "openai-agents[litellm]" requests python-dotenv
 
