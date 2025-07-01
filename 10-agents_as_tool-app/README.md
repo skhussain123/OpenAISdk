@@ -26,33 +26,54 @@ Create agents with specific roles and instructions.
 from agents import Agent, Runner
 
 # Define a shopping assistant agent
-shopping_agent = Agent(
-    name="Shopping Assistant",
-    instructions="You assist users in finding products and making purchase decisions."
+english_agent = Agent(
+    name="English Essay Agent",
+    instructions="Write a 3-paragraph essay in English on the user's topic.",
+    model=model
 )
 
 # Define a support agent
-support_agent = Agent(
-    name="Support Agent",
-    instructions="You help users with post-purchase support and returns."
+poetry_agent = Agent(
+    name="Poetry Writer Agent",
+    instructions="Write a 3-stanza English poem on the given topic.",
+    model=model
 )
+
 ```
 ##### 2. Convert Agents into Tools:
 Use the as_tool method to make each agent callable by other agents.
 ```bash
+
 # Convert agents into tools
-shopping_tool = shopping_agent.as_tool()
-support_tool = support_agent.as_tool()
+# ✅ English Essay Agent
+poetry_tool = poetry_agent.as_tool(
+    tool_name="english_poetry_writer_tool",
+    tool_description="Writes English poetry on the given topic."
+)
+
+# ✅ Poetry Agent
+poetry_agent = Agent(
+    name="Poetry Writer Agent",
+    instructions="Write a 3-stanza English poem on the given topic.",
+    model=model
+)
 ```
 
 ##### 3. Create a Triage Agent:
 Develop an agent responsible for routing user queries to the appropriate agent tool.
 ```bash
 # Define a triage agent that delegates tasks
+# ✅ Triage Agent
 triage_agent = Agent(
     name="Triage Agent",
-    instructions="You route user queries to the appropriate department.",
-    tools=[shopping_tool, support_tool]
+    instructions="""
+You are a smart assistant.
+1. If the user asks for a poem or poetry, use 'english_poetry_writer_tool'.
+2. Otherwise, use 'english_essay_writer_tool'.
+Never write content yourself. Always call the right tool.
+""",
+    tools=[english_tool, poetry_tool],
+    model=model
 )
 ```
 
@@ -60,8 +81,16 @@ triage_agent = Agent(
 Execute the triage agent with a user query to see it in action.
 ```bash
 # Run the triage agent with a sample input
-result = Runner.run_sync(triage_agent, "I need help with a recent purchase.")
-print(result.final_output)
+query = input("🟢 Enter your query (e.g., Write an essay or poem on pollution): ")
+
+result = Runner.run_sync(
+    triage_agent,
+    query,
+    run_config=config
+)
+
+print("\n📝 Response:\n", result.final_output)
+
 ```
 
 #### Complete Example in uv Project
