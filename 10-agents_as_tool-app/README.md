@@ -17,10 +17,8 @@ The as_tool method in OpenAI's Agents SDK allows you to transform an Agent insta
 
 ##### Using the as_tool Method:
 o utilize the as_tool method, you can follow these steps:
-
- * Define Individual Agents:
  
-1. Define Individual Agents:
+##### 1. Define Individual Agents:
 Create agents with specific roles and instructions.
 
 
