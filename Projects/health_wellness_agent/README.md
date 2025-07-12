@@ -1,15 +1,29 @@
 
-### Health & Wellness Agent
-A modular AI assistant built with the OpenAI Agents SDK — designed to help users set goals, plan meals, recommend workouts, schedule check-ins, and track progress, all via real-time CLI interaction.
+# Health & Wellness Agent 🤖💪
 
+An AI-powered modular health assistant built using OpenAI Agents SDK. This system consists of specialized sub-agents and tools that collaboratively help users achieve their fitness, nutrition, and wellness goals.
 
+---
 
+## 🚀 Features
+
+- ✅ Multi-turn intelligent agent conversations
+- 🍽️ Meal planning & nutrition advice
+- 🏃 Workout recommendations
+- 🎯 Goal analysis and tracking
+- 📅 Scheduling assistance
+- 🛡️ Guardrails for safe and valid user input
+- ⚕️ Escalation for injury or expert help
+
+---
+### Installations
 ```bash
 pip install openai-agents
 ```
 
 ###  Project Structure 
 
+```bash
 health_wellness_agent/
 │
 ├── agents/                          # Specialized sub-agents
@@ -31,3 +45,4 @@ health_wellness_agent/
 ├── main.py                          # Entrypoint for the app (e.g. Streamlit)
 ├── .env                             # API keys and environment config
 ├── README.md                        # Project overview and instructions
+```
