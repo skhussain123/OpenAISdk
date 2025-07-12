@@ -9,6 +9,7 @@ pip install openai-agents
 ```
 
 ###  Project Structure 
+
 health_wellness_agent/
 │
 ├── agents/                          # Specialized sub-agents
