@@ -157,3 +157,28 @@ agent = Agent(
 )
 ```
 
+## Customizing tool-agents
+The agent.as_tool function is a convenience method to make it easy to turn an agent into a tool. It doesn't support all configuration though; for example, you can't set max_turns. For advanced use cases, use Runner.run directly in your tool implementation:
+
+```bash
+from agents import Agent, Runner, function_tool
+
+@function_tool
+async def run_my_agent(input: str) -> str:
+    """Runs a sub-agent with custom config and input."""
+
+    agent = Agent(
+        name="My Agent",
+        instructions="You help users by translating text to French."
+    )
+
+    result = await Runner.run(
+        agent,
+        input=input,
+        max_turns=5  # You can control conversation length here
+    )
+
+    return str(result.final_output)
+```
+
+

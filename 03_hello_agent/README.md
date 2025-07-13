@@ -35,7 +35,51 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-```    
+```
+
+#### Agent-Level Configuration 
+Jab tum ek Agent banaatay ho, us waqt hi uska model, tools, aur instructions set kartay ho.
+
+##### Socho Tum Ek Agent Bana Rahe Ho
+```bash
+agent = Agent(
+    name="Hello Agent",
+    instructions="Tumhara kaam hai user ko 'Hello' kehna.",
+    model=model1  # GPT-4 ya koi bhi model
+)
+
+```
+##### Ab Yeh Kya Hua?
+1. Tumne agent ko bata diya ke woh kya kare (instructions)
+2. Tumne agent ko ek model de diya (e.g. GPT-4)
+3. Yeh sab uska "default setup" ban gaya — yani uska normal behavior
+
+
+##### Jab Tum Agent Run Karte Ho Normally
+```bash
+Runner.run_sync(agent, "Say hello")
+```
+
+* Tumne Runner.run_sync() me kuch extra nahi diya (jaise run_config)
+* Toh agent bolega: "Mere paas to already instructions aur model hain... wahi use kar leta hoon!"
+* Yani agent ne apna default setup use kiya jo tumne uske start me diya tha.
+
+##### Ab Socho Tum Chahtay Ho Temporary Change
+```bash
+from agents.run import RunConfig
+
+config = RunConfig(
+    model=model2  # ab GPT-3.5 use karo
+)
+
+Runner.run_sync(agent, "Say hello", run_config=config)
+```
+* Agent ne socha:"Aray mujhe to naye model ke sath chalaya gaya hai, chalo is bar model2 use karta hoon!"
+
+* Is bar usne apna default setup nahi use kiya.
+*  Usne run-level config use kiya — sirf is run ke liye.
+
+
 
 ### 2. RUN LEVEL
 ```bash
