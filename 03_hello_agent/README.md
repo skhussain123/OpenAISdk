@@ -113,6 +113,56 @@ result = Runner.run_sync(agent, "Hello, how are you.", run_config=config)
 print(result.final_output)
 ```
 
+_____________________________________________________________________________________________________________________
+
+#### Tumhara Agent Bana (Default Setup)
+```bash
+agent = Agent(
+    name="Simple Agent",
+    instructions="User ka message repeat karo.",
+    model=model1  # Default model
+)
+```
+* Ab yeh agent har baar model1 use karega jab tak tum kuch alag na karo.
+
+#### Normal Run (Default Setup Chalega)
+```bash
+Runner.run_sync(agent, "Hello there!")
+```
+* Yeh run agent-level config use karega — yani model1.
+
+#### Ab Tum Chaho Sirf Ek Bar Model Change Karna
+* Suppose tum chahte ho:"Is run me mujhe model2 use karna hai, lekin permanently nahi — sirf is bar ke liye."
+
+#### RunConfig Banao
+```bash
+from agents.run import RunConfig
+
+run_config = RunConfig(
+    model=model2,       # GPT-4 ya koi bhi
+    max_turns=3,        # Conversation sirf 3 turns ka ho
+)
+```
+* RunConfig ek temporary setting hai jo agent ke default setup ko sirf is bar ke liye override karti hai.
+
+#### Run Agent with RunConfig
+```bash
+Runner.run_sync(
+    agent,
+    "Hello!",
+    run_config=run_config
+)
+```
+* Ab agent model2 use karega (sirf is run ke liye), aur max 3 turns tak conversation allow karega.
+
+#### max_turns=2
+* Agent sirf 2 baar user ke sath baat karega (2 conversational turns)
+* Uske baad conversation automatically end ho jaye gi.
+
+_____________________________________________________________________________________________________________________
+
+
+
 ### GLOBAL
 ```bash
 from agents import Agent, Runner, AsyncOpenAI, set_default_openai_client, set_tracing_disabled, set_default_openai_api
