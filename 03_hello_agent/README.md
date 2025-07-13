@@ -36,6 +36,7 @@ async def main():
 if __name__ == "__main__":
     asyncio.run(main())
 ```
+________________________________________________________________________________________________________
 
 #### Agent-Level Configuration 
 Jab tum ek Agent banaatay ho, us waqt hi uska model, tools, aur instructions set kartay ho.
@@ -79,7 +80,7 @@ Runner.run_sync(agent, "Say hello", run_config=config)
 * Is bar usne apna default setup nahi use kiya.
 *  Usne run-level config use kiya — sirf is run ke liye.
 
-
+________________________________________________________________________________________________________
 
 ### 2. RUN LEVEL
 ```bash
