@@ -138,3 +138,79 @@ Otherwise, handoff to the English Agent.
     handoffs=[urdu_handoff_obj, english_handoff_obj],
 )
 ```
+
+#### 3. input_type
+input_type batata hai ke LLM jab tool ko call karega to us tool ko kis type ka input dena hai — ye type ho sakta hai:
+
+* str (default string)
+* int, float, bool
+* dict, list
+* Ya koi custom Pydantic model (for structured input)
+
+
+##### Simple string input
+```bash
+pip install pydantic
+```
+
+##### handoff() me input_type=MessageInput add karo
+```bash
+#  Define input type (Pydantic model)
+class MessageInput(BaseModel):
+    message: str
+
+# Define Urdu agent
+urdu_agent = Agent(
+    name="Urdu Agent",
+    instructions="آپ صرف اردو میں جواب دیتے ہیں۔"
+)
+
+# on_handoff
+def on_handoff_log_urdu(ctx, input):
+    print("➡️ Urdu Handoff triggered!")
+    print("📥 Urdu input received:", input)
+
+# Customized handoff tool for Urdu
+urdu_handoff_obj = handoff(
+    agent=urdu_agent,
+    on_handoff=on_handoff_log_urdu,
+    tool_name_override="custom_urdu_handoff_tool",
+    tool_description_override="This tool hands off the conversation to the Urdu Agent.",
+    input_type=MessageInput
+)
+
+# Define English agent
+english_agent = Agent(
+    name="English Agent",
+    instructions="You only respond in English."
+)
+
+# on_handoff
+def on_handoff_log_english(ctx, input):
+    print("➡️ English Handoff triggered!")
+    print("📥 English input received:", input)
+
+
+# Customized handoff tool for English
+english_handoff_obj = handoff(
+    agent=english_agent,
+    on_handoff=on_handoff_log_english,
+    tool_name_override="custom_english_handoff_tool",
+    tool_description_override="This tool hands off the conversation to the English Agent.",
+    input_type=MessageInput
+)
+
+# Define Triage Agent
+triage_agent = Agent(
+    name="Triage Agent",
+    instructions="""
+You are a language router agent.
+
+- If the message contains Urdu or Urdu characters like "آپ", "میں", etc., call the `custom_urdu_handoff_tool` with {"message": "<user message>"}.
+- If the message is in English, call the `custom_english_handoff_tool` with {"message": "<user message>"}.
+- Do NOT respond yourself. Always use one of the tools.
+""",
+    model=model,
+    handoffs=[urdu_handoff_obj, english_handoff_obj],
+)
+```
