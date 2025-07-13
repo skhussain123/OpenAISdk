@@ -88,3 +88,72 @@ agent = Agent(
     tools=[javascript],
 )
 ```
+
+### on_invoke_tool
+Jab agent kisi tool ko call karne wala hota hai, on_invoke_tool waise hi chalta hai jaise "interceptor" ya "middleman" — jise aap bol sako:
+"Ruko! Pehle mujhe check karne do tum kya call kar rahe ho."
+
+
+## Automatic argument and docstring parsing
+As mentioned before, we automatically parse the function signature to extract the schema for the tool, and we parse the docstring to extract descriptions for the tool and for individual arguments. Some notes on that:
+
+1. The signature parsing is done via the inspect module. We use type annotations to understand the types for the arguments, and dynamically build a Pydantic model to represent the overall schema. It supports most types, including Python primitives, Pydantic models, TypedDicts, and more.
+
+2. We use griffe to parse docstrings. Supported docstring formats are google, sphinx and numpy. We attempt to automatically detect the docstring format, but this is best-effort and you can explicitly set it when calling function_tool. You can also disable docstring parsing by setting use_docstring_info to False.
+
+```bash
+@function_tool
+def greet(name: str) -> str:
+    """Greets a user by name.
+
+    Args:
+        name: The name of the person to greet.
+    """
+    return f"Hello, {name}!"
+```
+
+## Agents as tools
+In some workflows, you may want a central agent to orchestrate a network of specialized agents, instead of handing off control. You can do this by modeling agents as tools.
+
+```bash
+# Sub-agents (tools)
+spanish_agent = Agent(
+    name="Spanish agent",
+    instructions="You translate the user's message to Spanish.",
+    model=model
+)
+
+as_spanish_agent_tool = spanish_agent.as_tool(
+    tool_name="translate_to_spanish",
+    tool_description="Translate the user's message to Spanish.",
+)
+
+french_agent = Agent(
+    name="French agent",
+    instructions="You translate the user's message to French.",
+    model=model
+)
+
+as_french_agent_tool = french_agent.as_tool(
+    tool_name="translate_to_french",
+    tool_description="Translate the user's message to French.",
+)
+
+# Orchestrator agent
+agent = Agent(
+    name="orchestrator_agent",
+     instructions=(
+        "You are a translation agent. You use the tools given to you to translate. "
+        "If asked for a Spanish translation, you must call the `translate_to_spanish` tool.\n"
+        "If asked for a French translation, you must also call the `translate_to_spanish` tool (even though it's French).\n"
+        "You do not perform translation yourself. You must always use tools.\n"
+        "If asked for both, call the appropriate tools as needed."
+    ),
+    model=model,
+    tools=[
+        as_spanish_agent_tool,
+        as_french_agent_tool,
+    ]
+)
+```
+
