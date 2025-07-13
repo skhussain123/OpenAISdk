@@ -115,45 +115,48 @@ print(result.final_output)
 
 _____________________________________________________________________________________________________________________
 
-#### Tumhara Agent Bana (Default Setup)
+#### Model & Client Banaya
+```bash
+external_client = AsyncOpenAI(
+    api_key=gemini_api_key,
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+)
+
+model = OpenAIChatCompletionsModel(
+    model="gemini-2.0-flash",
+    openai_client=external_client
+)
+
+```
+*  Tum ne gemini model ko use karne ke liye OpenAI-style wrapper banaya hai.
+
+#### RunConfig Banaya (Run-Level Config)
+```bash
+config = RunConfig(
+    model=model,
+    model_provider=external_client,
+    tracing_disabled=True
+)
+```
+*  model diya gaya (gemini)
+* model_provider bhi diya
+* tracing_disabled=True matlab trace logs off hain
+
+
+#### Agent Banaya (Agent-Level)
 ```bash
 agent = Agent(
-    name="Simple Agent",
-    instructions="User ka message repeat karo.",
-    model=model1  # Default model
+    name="Assistant",
+    instructions="You are a helpful assistant"
 )
 ```
-* Ab yeh agent har baar model1 use karega jab tak tum kuch alag na karo.
+* Ab is agent me tumne model ya tools nahi diye.
+* To agar tum Runner.run() me config nahi dete, to error aa sakta tha (kyun ke model missing hai).
 
-#### Normal Run (Default Setup Chalega)
+#### RunConfig Apply Karke Agent Chalaya
 ```bash
-Runner.run_sync(agent, "Hello there!")
+result = Runner.run_sync(agent, "Hello, how are you.", run_config=config)
 ```
-* Yeh run agent-level config use karega — yani model1.
-
-#### Ab Tum Chaho Sirf Ek Bar Model Change Karna
-* Suppose tum chahte ho:"Is run me mujhe model2 use karna hai, lekin permanently nahi — sirf is bar ke liye."
-
-#### RunConfig Banao
-```bash
-from agents.run import RunConfig
-
-run_config = RunConfig(
-    model=model2,       # GPT-4 ya koi bhi
-    max_turns=3,        # Conversation sirf 3 turns ka ho
-)
-```
-* RunConfig ek temporary setting hai jo agent ke default setup ko sirf is bar ke liye override karti hai.
-
-#### Run Agent with RunConfig
-```bash
-Runner.run_sync(
-    agent,
-    "Hello!",
-    run_config=run_config
-)
-```
-* Ab agent model2 use karega (sirf is run ke liye), aur max 3 turns tak conversation allow karega.
 
 #### max_turns=2
 * Agent sirf 2 baar user ke sath baat karega (2 conversational turns)
@@ -163,7 +166,7 @@ ________________________________________________________________________________
 
 
 
-### GLOBAL
+### 3. GLOBAL
 ```bash
 from agents import Agent, Runner, AsyncOpenAI, set_default_openai_client, set_tracing_disabled, set_default_openai_api
 
@@ -183,3 +186,41 @@ result = Runner.run_sync(agent, "Hello")
 
 print(result.final_output)
 ```
+
+_____________________________________________________________________________________________________________________
+
+#### set_default_openai_client(...)
+```bash
+external_client = AsyncOpenAI(
+    api_key=gemini_api_key,
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+)
+
+set_default_openai_client(external_client)
+```
+umne ek baar hi global client set kar diya:
+* Iska matlab: ab har agent aur model, agar koi specific client na diya ho, to yeh isi external_client ko use karega.
+
+#### Agent Banaya — Sirf Model String Diya
+```bash
+agent = Agent(
+    name="Assistant",
+    instructions="You are a helpful assistant",
+    model="gemini-2.0-flash"
+)
+```
+* Tumne model="gemini-2.0-flash" string di
+* Lekin koi model object ya client manually nahi diya
+* Phir bhi agent chalega — kyun?  Kyunke global level pe tumne already default_openai_client set kiya hua hai
+
+
+#### Agent Run Kiya
+```bash
+result = Runner.run_sync(agent, "Hello")
+```
+
+
+
+
+_____________________________________________________________________________________________________________________
+
