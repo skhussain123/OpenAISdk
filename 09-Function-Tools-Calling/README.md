@@ -61,3 +61,30 @@ Sometimes, you don't want to use a Python function as a tool. You can directly c
 * description
 * params_json_schema, which is the JSON schema for the arguments
 * on_invoke_tool, which is an async function that receives the context and the arguments as a JSON string, and must return the tool output as a string.
+
+
+1. LLM (Large Language Model) pehle user ki query ko analyze karta hai.
+2. LLM decides: "Mujhe koi tool call karna chahiye ya khud answer dena chahiye?"
+3. Agar LLM ko lagta hai ke tool call karna zaroori hai, to:
+  * Woh tool ka naam aur
+  * parameters in JSON format (tool_input) define karta hai (following params_json_schema).
+4. Agent us tool ko Python function ke form mein call karta hai.
+5. Tool response return karta hai (string, dict, etc).
+6. LLM tool ke output ko read karta hai.
+7. Fir LLM final answer generate karta hai and returns it to the user.
+
+
+```bash
+@function_tool
+def javascript(topic: str) -> str:
+    "Explains a JavaScript topic in simple terms."
+    return f"You asked about JavaScript topic: {topic}. Here's a basic explanation..."
+
+
+agent = Agent(
+    name="You are helpful assistant",
+    instructions=("You are a helpful assistant for programming."),
+    model=model,
+    tools=[javascript],
+)
+```
