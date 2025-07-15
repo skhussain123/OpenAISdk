@@ -72,3 +72,47 @@ Jab aik LLM (Language Model) ko call kiya jata hai, to wo sirf wahi data dekh sa
 
 ### Summary
 LLM sirf wahi data dekh sakta hai jo uske conversation history me ho — is liye agar aap extra info dena chahte ho, to usay prompt, input, tool, ya retrieval ke zariye model ke saamne lana hota hai.
+
+
+## RunContext
+
+```bash
+
+# Define your custom context
+@dataclass
+class UserInfo:
+    name: str
+    uid: int
+
+# Tool that uses local context
+@function_tool
+async def fetch_user_age(wrapper: RunContextWrapper[UserInfo]) -> str:
+    return f"User {wrapper.context.name} is 47 years old."
+
+# Agent that uses the context-aware tool
+agent = Agent[UserInfo](
+    name="Assistant",
+    tools=[fetch_user_age],
+    model=model
+)
+
+# Main runner
+async def main():
+    # Create your context
+    user_info = UserInfo(name="Ali", uid=101)
+
+    # Run the agent
+    result = await Runner.run(
+        starting_agent=agent,
+        input="What is the age of the user?",
+        context=user_info,
+        run_config=config
+    )
+
+    print("\n Final Output:\n", result.final_output)
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
+```
+

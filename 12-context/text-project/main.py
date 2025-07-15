@@ -5,12 +5,13 @@ from dotenv import load_dotenv
 
 from agents import Agent, Runner, RunContextWrapper, AsyncOpenAI, OpenAIChatCompletionsModel, function_tool
 from agents.run import RunConfig
+from context import UserSessionContext
 
 # Load environment variables (optional, in case you want to move the API key to .env file)
 load_dotenv()
-
+# Define a function tool that uses the context
 # Gemini API Key (either use .env or hardcode here)
-gemini_api_key = ''
+gemini_api_key = 'AIzaSyCnkIzE4fdmJxLOJdRdPGo3s_ZMSzC5L3o'
 
 # Validate key
 if not gemini_api_key:
@@ -34,34 +35,20 @@ config = RunConfig(
     model_provider=external_client
 )
 
-# Define your custom context
-@dataclass
-class UserInfo:
-    name: str
-    uid: int
-
-# Tool that uses local context
-@function_tool
-async def fetch_user_age(wrapper: RunContextWrapper[UserInfo]) -> str:
-    return f"User {wrapper.context.name} is 47 years old."
 
 # Agent that uses the context-aware tool
-agent = Agent[UserInfo](
+agent = Agent(
     name="Assistant",
-    tools=[fetch_user_age],
     model=model
 )
 
 # Main runner
 async def main():
-    # Create your context
-    user_info = UserInfo(name="Ali", uid=101)
-
     # Run the agent
     result = await Runner.run(
         starting_agent=agent,
         input="What is the age of the user?",
-        context=user_info,
+        context=UserSessionContext(name="TestUser", uid=12345),
         run_config=config
     )
 
