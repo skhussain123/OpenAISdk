@@ -214,3 +214,50 @@ You are a language router agent.
     handoffs=[urdu_handoff_obj, english_handoff_obj],
 )
 ```
+
+### 4. input_filter 
+input_filter ek function hota hai jo input ko filter ya transform karta hai before wo next agent ko diya jaye.
+
+Agent A → handoff → Agent B
+Is process me agar tum chahte ho ke Agent B ko sirf cleaned, customized ya filtered data mile, to input_filter ka use hota hai.
+
+```bash
+def input_filter_english(raw_input: str) -> dict:
+    return {"message": raw_input.strip().replace("?", "")}
+
+
+# Define English agent
+english_agent = Agent(
+    name="English Agent",
+    instructions="You only respond in English."
+)
+
+# on_handoff
+def on_handoff_log_english(ctx, input):
+    print("➡️ English Handoff triggered!")
+    print("📥 English input received:", input)
+
+
+# Customized handoff tool for English
+english_handoff_obj = handoff(
+    agent=english_agent,
+    on_handoff=on_handoff_log_english,
+    input_filter=input_filter_english,
+    tool_name_override="custom_english_handoff_tool",
+    tool_description_override="This tool hands off the conversation to the English Agent.",
+)
+
+# Define Triage Agent
+triage_agent = Agent(
+    name="Triage Agent",
+    instructions="""
+You are a language router agent.
+
+- If the message contains Urdu or Urdu characters like "آپ", "میں", etc., call the `custom_urdu_handoff_tool` with {"message": "<user message>"}.
+- If the message is in English, call the `custom_english_handoff_tool` with {"message": "<user message>"}.
+- Do NOT respond yourself. Always use one of the tools.
+""",
+    model=model,
+    handoffs=[english_handoff_obj],
+)
+```
