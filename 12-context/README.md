@@ -32,14 +32,37 @@ Context, jo ke AI agent ko samajhne aur intelligent response dene mein madad kar
 3. External Functions / Tools / APIs: Jab agent kisi external source se data fetch karta hai — jaise web search, database query, ya kisi tool ka result — to wo information bhi agent ke liye context ban jati hai. Ye context agent loop mein automatically add hoti hai taake aane wale response usi ke base par ho. Example: web search result: "Lahore weather is 34°C and sunny."
 
 
+#### User Profile Management Third Party Tool
+https://mem0.ai/
 
 
+Context is an overloaded term. There are two main classes of context you might care about:
 
+Context available locally to your code: this is data and dependencies you might need when tool functions run, during callbacks like on_handoff, in lifecycle hooks, etc.
+Context available to LLMs: this is data the LLM sees when generating a response.
 
+##### 1. Local context
+Ye wo context hota hai jo sirf aapke Python code ke liye hota hai, LLM isay nahi dekhta. Ye context aap use karte ho:
 
+* Jab koi tool function chal raha hota hai
+* Jab on_handoff(), on_step_start(), on_step_end() jaise callback hooks chalte hain
+* Jab aapko user ID, token, ya environment variable zarurat ho tool ke andar
+* API key, config, ya backend ka internal data
+* Ye context sirf code ke liye hota hai, model ke liye nahi.
 
+##### 2. Agent/LLM context
 
+Ye wo context hota hai jo directly LLM ko diya jata hai — aur ye uske jawab banane mein help karta hai. Ismein shamil hota hai:
+* System Prompt: LLM ko role ya instruction batana
+* User Input Prompt: Jo user ne kaha
+* Tool ka Output: Agar kisi tool ne response diya, to wo bhi context ban jata hai
+* Memory ya Conversation History: Pehle kya baat hui, wo bhi context hai
+*  LLM is context ko directly dekhta hai aur usi base par jawab deta hai.
 
+| Type          | Kis ke liye hai?    | LLM ko visible? | Use Kahan Hota Hai?                         |
+| ------------- | ------------------- | --------------- | ------------------------------------------- |
+| Local Context | Python code ke liye | ❌ Nahin         | Tools, callbacks, config, internal logic    |
+| LLM Context   | LLM ke liye         | ✅ Haan          | Prompt, memory, tool output, agent messages |
 
 
 
