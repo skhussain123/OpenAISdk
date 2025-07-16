@@ -50,31 +50,57 @@ Ye wo context hota hai jo sirf aapke Python code ke liye hota hai, LLM isay nahi
 * API key, config, ya backend ka internal data
 * Ye context sirf code ke liye hota hai, model ke liye nahi.
 
-##### 2. Agent/LLM context
 
-Ye wo context hota hai jo directly LLM ko diya jata hai — aur ye uske jawab banane mein help karta hai. Ismein shamil hota hai:
-* System Prompt: LLM ko role ya instruction batana
-* User Input Prompt: Jo user ne kaha
-* Tool ka Output: Agar kisi tool ne response diya, to wo bhi context ban jata hai
-* Memory ya Conversation History: Pehle kya baat hui, wo bhi context hai
-*  LLM is context ko directly dekhta hai aur usi base par jawab deta hai.
+This is represented via the RunContextWrapper class and the context property within it. The way this works is:
 
-| Type          | Kis ke liye hai?    | LLM ko visible? | Use Kahan Hota Hai?                         |
-| ------------- | ------------------- | --------------- | ------------------------------------------- |
-| Local Context | Python code ke liye | ❌ Nahin         | Tools, callbacks, config, internal logic    |
-| LLM Context   | LLM ke liye         | ✅ Haan          | Prompt, memory, tool output, agent messages |
+1. You create any Python object you want. A common pattern is to use a dataclass or a Pydantic object.
+2. You pass that object to the various run methods (e.g. Runner.run(..., **context=whatever**)).
+3. All your tool calls, lifecycle hooks etc will be passed a wrapper object, RunContextWrapper[T], where T represents your context object type which you can access via wrapper.context.
 
+The most important thing to be aware of: every agent, tool function, lifecycle etc for a given agent run must use the same type of context.
+
+* Contextual data for your run (e.g. things like a username/uid or other information about the user)
+* Dependencies (e.g. logger objects, data fetchers, etc)
+* Helper functions
 
 
+```bash
+import asyncio
+from dataclasses import dataclass
 
+from agents import Agent, RunContextWrapper, Runner, function_tool
 
+@dataclass
+class UserInfo:  
+    name: str
+    uid: int
 
+@function_tool
+async def fetch_user_age(wrapper: RunContextWrapper[UserInfo]) -> str:  
+    """Fetch the age of the user. Call this function to get user's age information."""
+    return f"The user {wrapper.context.name} is 47 years old"
 
+async def main():
+    user_info = UserInfo(name="John", uid=123)
 
+    agent = Agent[UserInfo](  
+        name="Assistant",
+        tools=[fetch_user_age],
+    )
 
+    result = await Runner.run(  
+        starting_agent=agent,
+        input="What is the age of the user?",
+        context=user_info,
+    )
 
+    print(result.final_output)  
+    # The user John is 47 years old.
 
+if __name__ == "__main__":
+    asyncio.run(main())
 
+```
 
 
 ### 1. Context kya hota hai?
@@ -109,6 +135,27 @@ Jab aik agent run hota hai, to context automatically create ho jata hai.
 * Data store karna, tools access karna aur info pass karna iske zariye hota hai
 * Iska istemal agents ke darmiyan coordination aur data flow ke liye hota hai
 * Use: context.memory["key"] = value, context.tools["tool"], context.user_id
+
+
+
+##### 2. Agent/LLM context
+
+Ye wo context hota hai jo directly LLM ko diya jata hai — aur ye uske jawab banane mein help karta hai. Ismein shamil hota hai:
+* System Prompt: LLM ko role ya instruction batana
+* User Input Prompt: Jo user ne kaha
+* Tool ka Output: Agar kisi tool ne response diya, to wo bhi context ban jata hai
+* Memory ya Conversation History: Pehle kya baat hui, wo bhi context hai
+*  LLM is context ko directly dekhta hai aur usi base par jawab deta hai.
+
+| Type          | Kis ke liye hai?    | LLM ko visible? | Use Kahan Hota Hai?                         |
+| ------------- | ------------------- | --------------- | ------------------------------------------- |
+| Local Context | Python code ke liye | ❌ Nahin         | Tools, callbacks, config, internal logic    |
+| LLM Context   | LLM ke liye         | ✅ Haan          | Prompt, memory, tool output, agent messages |
+
+
+
+
+
 
 
 ## Agent / LLM Context
