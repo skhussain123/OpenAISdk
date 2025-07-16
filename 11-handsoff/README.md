@@ -14,6 +14,16 @@ All agents have a handoffs param, which can either take an Agent directly, or a 
 
 You can create a handoff using the handoff() function provided by the Agents SDK. This function allows you to specify the agent to hand off to, along with optional overrides and input filters.
 
+#### Packages
+```bash
+import os
+from dotenv import load_dotenv
+from pydantic import BaseModel
+from agents import Agent, Runner, AsyncOpenAI, handoff, OpenAIChatCompletionsModel
+from agents.run import RunConfig
+from agents.extensions import handoff_filters
+```
+
 ```bash
 # Urdu agent
 urdu_agent = Agent(
@@ -222,9 +232,10 @@ Agent A → handoff → Agent B
 Is process me agar tum chahte ho ke Agent B ko sirf cleaned, customized ya filtered data mile, to input_filter ka use hota hai.
 
 ```bash
-def input_filter_english(raw_input: str) -> dict:
-    return {"message": raw_input.strip().replace("?", "")}
-
+def input_filter_english(input_data) -> dict:
+    user_input = input_data.raw_input
+    cleaned = user_input.strip().replace("?", "")
+    return {"message": cleaned}
 
 # Define English agent
 english_agent = Agent(
@@ -232,17 +243,11 @@ english_agent = Agent(
     instructions="You only respond in English."
 )
 
-# on_handoff
-def on_handoff_log_english(ctx, input):
-    print("➡️ English Handoff triggered!")
-    print("📥 English input received:", input)
-
 
 # Customized handoff tool for English
 english_handoff_obj = handoff(
     agent=english_agent,
-    on_handoff=on_handoff_log_english,
-    input_filter=input_filter_english,
+    input_filter=handoff_filters.remove_all_tools,
     tool_name_override="custom_english_handoff_tool",
     tool_description_override="This tool hands off the conversation to the English Agent.",
 )
@@ -253,7 +258,6 @@ triage_agent = Agent(
     instructions="""
 You are a language router agent.
 
-- If the message contains Urdu or Urdu characters like "آپ", "میں", etc., call the `custom_urdu_handoff_tool` with {"message": "<user message>"}.
 - If the message is in English, call the `custom_english_handoff_tool` with {"message": "<user message>"}.
 - Do NOT respond yourself. Always use one of the tools.
 """,

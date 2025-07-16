@@ -1,4 +1,20 @@
 
+#### Tools type
+custom function likhy or uska schemea likhty hain. kisi bhi function me @decorator laga kr tool me convert krle..
+hosted tool jo pechy le bany howy ho, ---> third party hosted tool
+file search tool alternative(custom rag system)
+computer operator preview model alternative(Browser use)
+open
+
+
+#### Agent 4 cheezy leta haer
+* system promt
+* user prompt
+* tool schema
+* final tool ka answer dety ha llm ko
+
+
+
 
 ## Context management
 
