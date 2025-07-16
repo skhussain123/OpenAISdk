@@ -15,10 +15,43 @@ open
 
 
 
-
 ## Context management
 
 Agents SDK me context aik central system hota hai jo agents ke darmiyan data share karne, tools use karne aur memory maintain karne ke liye use hota hai.
+
+Context wo additional maloomat hoti hai jo hum apne LLM ya agent ko dete hain — taake wo apna kaam zyada samajhdari se kar sake. Ye information LLM ke paas naturally nahi hoti, is liye humein manually deni padti hai. Jaise agar user ka naam, unki preferences, unka pehla message, koi external tool se aayi information (jaise weather data, database records, ya health status) — in sab ko hum agent ko context ke taur par dete hain. Jab agent loop chalta hai aur beech mein tools call hotay hain, ya external sources se data fetch hota hai, aur wo data agent ko diya jata hai taake agla decision usi base par ho — to ye poora process context sharing kehlata hai. Is context ke zariye agent ko “yaad” rahta hai ke pehle kya ho chuka hai, user ka maksad kya hai, aur kaun se tools ya steps involve ho chuke hain. Yani context basically agent ka working memory hoti hai jo har interaction ko meaningful banati hai.
+
+### Context Dene ke 3 Tareeqay (OpenAI Agents SDK / LLMs)
+
+Context, jo ke AI agent ko samajhne aur intelligent response dene mein madad karta hai, hum teen mukhtalif tareeqon se provide kar sakte hain:
+
+1. System Prompt: Ye ek initial instruction hota hai jo agent ko batata hai ke uska role kya hai, tone kaisi honi chahiye, aur kis tarah ka behavior expect kiya ja raha hai. Jaise: "You are a helpful legal assistant." — ye prompt agent ke reasoning ka base tay karta hai.
+
+2. User Input Prompt: Jab user koi query bhejta hai, wo bhi context ka ek hissa hota hai. Ye prompt dynamic hota hai, har interaction ke saath change hota hai, aur agent ko batata hai ke abhi kya karna hai. Jaise: "Mujhe Lahore ka weather batao."
+
+3. External Functions / Tools / APIs: Jab agent kisi external source se data fetch karta hai — jaise web search, database query, ya kisi tool ka result — to wo information bhi agent ke liye context ban jati hai. Ye context agent loop mein automatically add hoti hai taake aane wale response usi ke base par ho. Example: web search result: "Lahore weather is 34°C and sunny."
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ### 1. Context kya hota hai?

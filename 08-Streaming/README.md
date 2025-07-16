@@ -129,10 +129,6 @@ async def main():
             else:
                 pass  # Ignore other event types
 
-
-
-
-
 asyncio.run(main())
 
 print("=== Run complete ===")
