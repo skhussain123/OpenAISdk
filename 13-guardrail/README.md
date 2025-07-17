@@ -62,14 +62,27 @@ query = "what is the capital of pakistan?"
 result = Runner.run_sync(agent,query,run_config=config
 )
 
+# 1st print
 print(result.final_output)
 
+# 2nd print
+print(result.final_output.is_math_homework)
+print(result.final_output.reasoning)
+print(result.final_output.answer)
+
+
 ```
-#### Output:
+#### 1st Output:
 ```bash
 is_math_homework=False reasoning='The capital of Pakistan is Islamabad. This is general knowledge.' answer='Islamabad' 
 ```
 
+#### 2nd Output:
+```bash
+False
+The capital of Pakistan is Islamabad. This is a well-known fact.
+Islamabad
+```
 
 
 
@@ -104,10 +117,7 @@ is_math_homework=False reasoning='The capital of Pakistan is Islamabad. This is 
 
 
 
-
-
-
-### Input guardrails
+## Input guardrails
 
 ```bash
 ```
