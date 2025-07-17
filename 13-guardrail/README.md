@@ -20,38 +20,37 @@ from pydantic import BaseModel
 from agents import (Agent,Runner,AsyncOpenAI,OpenAIChatCompletionsModel,RunConfig
 )
 
-
-# 🔐 Load API Key from .env
 load_dotenv()
 gemini_api_key = os.getenv("GEMINI_API_KEY")
+
 
 if not gemini_api_key:
     raise ValueError("GEMINI_API_KEY environment variable is not set.")
 
-# 🔗 Gemini-compatible OpenAI-style client
+
 external_client = AsyncOpenAI(
     api_key=gemini_api_key,
     base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
 )
 
-# 🧠 Model object
 model = OpenAIChatCompletionsModel(
     model="gemini-2.0-flash",
     openai_client=external_client
 )
 
-# ⚙️ Run configuration
 config = RunConfig(
     model=model,
     model_provider=external_client,
 )
 
+# Define the output type for the agent
 class MathHomeworkOutput(BaseModel):
     is_math_homework: bool
     reasoning: str
     answer: str
 
-    
+
+# Define the agent with instructions and output type
 agent = Agent(
     name="Customer support agent",
     instructions="You are a customer support agent. You help customers with their questions.",
@@ -60,14 +59,11 @@ agent = Agent(
 
 
 query = "what is the capital of pakistan?"
-
-result = Runner.run_sync(
-    agent,
-    query,
-    run_config=config
+result = Runner.run_sync(agent,query,run_config=config
 )
 
 print(result.final_output)
+
 ```
 #### Output:
 ```bash
