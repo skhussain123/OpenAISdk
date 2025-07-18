@@ -81,8 +81,8 @@ Pakistan
 ```
 
 
-## Input guardrails Agent ('sirf pakistan se related Question ka Answer dega ye')
-
+## 1. Input guardrails Agent ('sirf pakistan se related Question ka Answer dega ye')
+ 
 #### Note
 Input guardrails are intended to run on user input, so an agent's guardrails only run if the agent is the first agent. You might wonder, why is the guardrails property on the agent instead of passed to Runner.run? It's because guardrails tend to be related to the actual Agent - you'd run different guardrails for different agents, so colocating the code is useful for readability.
 
@@ -171,7 +171,7 @@ except InputGuardrailTripwireTriggered:
 ho jaega.
 
 
-## Output guardrails ('sirf pakistan se related Question ka Answer dega ye. output ko validate krke reponse dega')
+## 2. Output guardrails ('sirf pakistan se related Question ka Answer dega ye. output ko validate krke reponse dega')
 
 #### Note
 Output guardrails are intended to run on the final agent output, so an agent's guardrails only run if the agent is the last agent. Similar to the input guardrails, we do this because guardrails tend to be related to the actual Agent - you'd run different guardrails for different agents, so colocating the code is useful for readability.
