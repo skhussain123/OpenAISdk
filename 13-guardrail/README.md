@@ -12,20 +12,21 @@ Guardrails run in parallel to your agents, enabling you to do checks and validat
 uv add pydantic
 ```
 
-##### agr ap chahty ha apka agent structure output de. to pydantic structure output deny ke help krygi
+#### agr ap chahty ha apka agent structure output de. to pydantic structure output deny ke help krygi
 ```bash
+import asyncio
 import os
 from dotenv import load_dotenv
 from pydantic import BaseModel
-from agents import (Agent,Runner,AsyncOpenAI,OpenAIChatCompletionsModel,RunConfig
-)
+from agents import (
+    Agent, Runner, AsyncOpenAI, OpenAIChatCompletionsModel, RunConfig, set_tracing_disabled)
 
 load_dotenv()
 gemini_api_key = os.getenv("GEMINI_API_KEY")
-
-
 if not gemini_api_key:
     raise ValueError("GEMINI_API_KEY environment variable is not set.")
+
+set_tracing_disabled(disabled=True)
 
 
 external_client = AsyncOpenAI(
@@ -34,160 +35,147 @@ external_client = AsyncOpenAI(
 )
 
 model = OpenAIChatCompletionsModel(
-    model="gemini-2.0-flash",
+    model="gemini-1.5-flash",
     openai_client=external_client
 )
 
-config = RunConfig(
-    model=model,
-    model_provider=external_client,
-)
+config = RunConfig(model=model, model_provider=external_client)
 
-# Define the output type for the agent
-class MathHomeworkOutput(BaseModel):
-    is_math_homework: bool
+class CountryOutput(BaseModel):
+    is_country_allowed: bool
     reasoning: str
-    answer: str
+    country: str
 
-
-# Define the agent with instructions and output type
-agent = Agent(
-    name="Customer support agent",
-    instructions="You are a customer support agent. You help customers with their questions.",
-    output_type=MathHomeworkOutput,
+country_agent = Agent(
+    name="Country Guardrail check",
+    instructions="we only allow to talk about pakistan.do not answer question about any other Country or aspect",
+    output_type=CountryOutput,
+    model=model,
 )
-
 
 query = "what is the capital of pakistan?"
-result = Runner.run_sync(agent,query,run_config=config
-)
+result = Runner.run_sync(country_agent,query,run_config=config)
 
 # 1st print
-print(result.final_output)
+print('\n\n',result.final_output)
+
+# Data Return in Dic Format 
+print('\n\n',result.final_output.model_dump())
 
 # 2nd print
-print(result.final_output.is_math_homework)
+
+print(result.final_output.is_country_allowed)
 print(result.final_output.reasoning)
-print(result.final_output.answer)
-
+print(result.final_output.country)
 
 ```
-#### 1st Output:
+#### Output:
 ```bash
-is_math_homework=False reasoning='The capital of Pakistan is Islamabad. This is general knowledge.' answer='Islamabad' 
+is_country_allowed=True reasoning='The query is about Pakistan, which is allowed.' country='Pakistan'
+
+
+ {'is_country_allowed': True, 'reasoning': 'The query is about Pakistan, which is allowed.', 'country': 'Pakistan'} 
+True
+The query is about Pakistan, which is allowed.
+Pakistan
 ```
 
-#### 2nd Output:
-```bash
-False
-The capital of Pakistan is Islamabad. This is a well-known fact.
-Islamabad
-```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Input guardrails
-
-```bash
-```
+## Input guardrails Agent ('sirf pakistan se related Question ka Answer dega ye')
 
 #### Note
 Input guardrails are intended to run on user input, so an agent's guardrails only run if the agent is the first agent. You might wonder, why is the guardrails property on the agent instead of passed to Runner.run? It's because guardrails tend to be related to the actual Agent - you'd run different guardrails for different agents, so colocating the code is useful for readability.
 
-
-
-
-
-
-
-
-### Output guardrails
 ```bash
+import asyncio
+import os
+from dotenv import load_dotenv
 from pydantic import BaseModel
 from agents import (
-    Agent,
-    GuardrailFunctionOutput,
-    OutputGuardrailTripwireTriggered,
-    RunContextWrapper,
-    Runner,
-    output_guardrail,
-)
-class MessageOutput(BaseModel): 
-    response: str
+    Agent, Runner, AsyncOpenAI, OpenAIChatCompletionsModel, RunConfig, set_tracing_disabled,
+    TResponseInputItem,
+    input_guardrail,
+    GuardrailFunctionOutput,RunContextWrapper,
+    InputGuardrailTripwireTriggered,
+    OutputGuardrailTripwireTriggered)
 
-class MathOutput(BaseModel): 
+load_dotenv()
+gemini_api_key = os.getenv("GEMINI_API_KEY")
+if not gemini_api_key:
+    raise ValueError("GEMINI_API_KEY environment variable is not set.")
+
+set_tracing_disabled(disabled=True)
+
+
+external_client = AsyncOpenAI(
+    api_key=gemini_api_key,
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+)
+
+model = OpenAIChatCompletionsModel(
+    model="gemini-1.5-flash",
+    openai_client=external_client
+)
+
+config = RunConfig(model=model, model_provider=external_client)
+
+class CountryOutput(BaseModel):
+    is_country_allowed: bool
     reasoning: str
-    is_math: bool
+    country: str
 
-guardrail_agent = Agent(
-    name="Guardrail check",
-    instructions="Check if the output includes any math.",
-    output_type=MathOutput,
+
+country_agent = Agent(
+    name="Country Guardrail check",
+    instructions="we only allow to talk about pakistan.do not answer question about any other Country or aspect",
+    output_type=CountryOutput,
+    model=model,
 )
 
-@output_guardrail
-async def math_guardrail(  
-    ctx: RunContextWrapper, agent: Agent, output: MessageOutput
+
+@input_guardrail
+async def guardrail_country_output(
+    ctx: RunContextWrapper[None], agent: Agent, output: CountryOutput
 ) -> GuardrailFunctionOutput:
-    result = await Runner.run(guardrail_agent, output.response, context=ctx.context)
+    result = await Runner.run(country_agent, output, context=ctx.context,)
+    
+    # print('/n/n Guardrail Country Response',result.final_output)
 
     return GuardrailFunctionOutput(
         output_info=result.final_output,
-        tripwire_triggered=result.final_output.is_math,
+        tripwire_triggered=result.final_output.is_country_allowed is False,
     )
-
-agent = Agent( 
+ 
+agent = Agent(
     name="Customer support agent",
     instructions="You are a customer support agent. You help customers with their questions.",
-    output_guardrails=[math_guardrail],
-    output_type=MessageOutput,
+    input_guardrails=[guardrail_country_output],
 )
+    
 
-async def main():
-    # This should trip the guardrail
-    try:
-        await Runner.run(agent, "Hello, can you help me solve for x: 2x + 3 = 11?")
-        print("Guardrail didn't trip - this is unexpected")
+try:
+    query = "what is the capital of china?"
+    result = Runner.run_sync(agent,query,run_config=config)
+    print(result.final_output)
 
-    except OutputGuardrailTripwireTriggered:
-        print("Math output guardrail tripped")
+
+except OutputGuardrailTripwireTriggered:
+    print("Output Guardrail Tripped")    
+    
+except InputGuardrailTripwireTriggered:
+    print("Input Guardrail Tripped")
+    
 ```
+
+* jab bhi user query dega to wo input pehly validate hoga. agr user ny pakistan ke elawa koe information pochi to input guardrail grigger 
+ho jaega.
+
+
+## Output guardrails ('sirf pakistan se related Question ka Answer dega ye. output ko validate krke reponse dega')
 
 #### Note
 Output guardrails are intended to run on the final agent output, so an agent's guardrails only run if the agent is the last agent. Similar to the input guardrails, we do this because guardrails tend to be related to the actual Agent - you'd run different guardrails for different agents, so colocating the code is useful for readability.
 
+```bash
 
-### Tripwires
-If the input or output fails the guardrail, the Guardrail can signal this with a tripwire. As soon as we see a guardrail that has triggered the tripwires, we immediately raise a {Input,Output}GuardrailTripwireTriggered exception and halt the Agent execution.
-
+```
