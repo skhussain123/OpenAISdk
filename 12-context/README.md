@@ -11,9 +11,7 @@ open
 * system promt
 * user prompt
 * tool schema
-* final tool ka answer dety ha llm ko
-
-
+* final tool ka answer ho wapis agent ke pass jata hain
 
 ## Context management
 
@@ -203,6 +201,45 @@ User: Tell me a joke.
 Assistant: Why did the scarecrow
 Win an award? Because he was
 Outstanding in his field.
+
+### Usingpydantic 
+```bash
+import asyncio
+from pydantic import BaseModel
+
+from agents import Agent, RunContextWrapper, Runner, function_tool
+
+# ✅ Pydantic BaseModel use kiya gaya hai
+class UserInfo(BaseModel):  
+    name: str
+    uid: int
+
+@function_tool
+async def fetch_user_age(wrapper: RunContextWrapper[UserInfo]) -> str:  
+    """Fetch the age of the user. Call this function to get user's age information."""
+    return f"The user {wrapper.context.name} is 47 years old"
+
+async def main():
+    user_info = UserInfo(name="John", uid=123)
+
+    agent = Agent[UserInfo](  
+        name="Assistant",
+        tools=[fetch_user_age],
+    )
+
+    result = await Runner.run(  
+        starting_agent=agent,
+        input="What is the age of the user?",
+        context=user_info,
+    )
+
+    print(result.final_output)  
+    # Output: The user John is 47 years old.
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
+```
 
 ### 2. Agent/LLM context
 
