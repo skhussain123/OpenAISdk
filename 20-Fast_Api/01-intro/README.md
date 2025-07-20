@@ -45,3 +45,15 @@ http://127.0.0.1:8000/redoc
 | Clean UI            | ⚠️ OK         | ✅ Very Clean      |
 | Built-in in FastAPI | ✅ Yes         | ✅ Yes             |
 | For Testing         | ✅ Best suited | ❌ Not for testing |
+
+
+### main.py ('Hello World')
+```bash
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+def read_root():
+    return {"message": "Hello, FastAPI!"}
+```    
