@@ -1,0 +1,38 @@
+
+
+#### 
+```bash
+app = FastAPI(title="fast api")
+
+@app.get("/")
+def read_root():
+    return {"message": "Hello, FastAPI!"}
+
+# @app.push("/")
+# def read_root():
+#     return {"message": "Hello, FastAPI!"}
+
+
+@app.delete("/")
+def read_root():
+    return {"message": "Hello, FastAPI!"}
+
+@app.put("/")
+def read_root():
+    return {"message": "Hello, FastAPI!"}
+```   
+
+#### Fastapi Run project 
+```bash
+uvicorn main:app --reload
+```
+
+#### Fastapi Run project with Different Port
+```bash
+uvicorn main:app --reload --port 5000
+```
+
+#### Api Test
+```bash
+http://127.0.0.1:8000/docs
+```

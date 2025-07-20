@@ -42,7 +42,7 @@ uvicorn main:app --reload
 
 ### Fastapi Run project with Different Port
 ```bash
-uvicorn main:app --reload
+uvicorn main:app --reload --port 5000
 ```
 
 
