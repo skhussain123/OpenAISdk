@@ -1,4 +1,34 @@
 
+### Intro
+FastAPI lets you create web APIs in Python — just like Django or Flask, but faster and smarter.
+
+### FastApi Work
+
+#### 1. Frontend (e.g., React, Angular, HTML/JS)
+User koi action karta hai — jaise form submit ya button click.
+
+#### 2. Request to FastAPI
+Frontend se HTTP request jaata hai (like GET, POST, etc.) FastAPI ke server pe.
+
+#### 3. FastAPI (Backend)
+
+* Request ko process karta hai
+* Database se data leta hai (agar zarurat ho)
+* Response banata hai
+
+#### 4. Response to Frontend
+FastAPI ye response JSON format me frontend ko wapas bhej deta hai.
+
+```bash
+[Frontend UI]
+     ↓  (Request)
+[FastAPI Server]
+     ↓  (Fetch from DB, Logic)
+[FastAPI Server]
+     ↑  (JSON Response)
+[Frontend UI]
+
+```
 
 ### Install FastApi
 ```bash
