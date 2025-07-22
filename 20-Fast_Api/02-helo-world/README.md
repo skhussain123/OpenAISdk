@@ -41,12 +41,52 @@ http://127.0.0.1:8000/docs
 ### What is an Endpoint in Web Development?
 An endpoint is a URL path that a client (like frontend, mobile app, or Postman) can send a request to and get a response from the backend (e.g., FastAPI server).
 
+#### Simple Request
 ```bash
 @app.get("/users")
 def get_users():
     return {"message": "List of users"}
 
 ```
+
+#### With Send Data
+```bash
+@app.get("/")
+def read_root():
+    return {
+        "data": ['hussain','ali'],
+        "message": "Hello, FastAPI!",
+        "status":200
+        }
+     
+```
+
+#### With Try Catch
+```bash
+app = FastAPI()
+
+@app.get("/")
+def read_root():
+    try:
+        
+        return{
+            'status': 'success',
+            'data':{
+                'name':'husain',
+                'profile':'url here',
+                'age': 25,
+                'address':'karachi'
+            }
+
+        }
+        
+    except Exception as e: 
+        return {
+        "message": str(e),
+        "error":404
+        }
+```        
+
 
 * /users is the endpoint
 * GET is the method
