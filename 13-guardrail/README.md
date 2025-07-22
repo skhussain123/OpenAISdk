@@ -79,7 +79,7 @@ except InputGuardrailTripwireTriggered:
     
     
  ```
-    
+
 
 ```bash
 uv add pydantic
@@ -405,3 +405,103 @@ except InputGuardrailTripwireTriggered:
     print("Input Guardrail Tripped")
 ```
 * Agar output guardrail ne block kiya (like "China" mention hua) → ye exception trigger hota hai.
+
+
+
+### PIAIC Gaurdrails example
+```bash
+import asyncio
+import os
+from dotenv import load_dotenv
+from pydantic import BaseModel
+from agents import (
+    Agent, Runner, AsyncOpenAI, OpenAIChatCompletionsModel, RunConfig, set_tracing_disabled,
+    input_guardrail,
+    RunContextWrapper,
+    GuardrailFunctionOutput,
+    OutputGuardrailTripwireTriggered,
+    InputGuardrailTripwireTriggered,
+    InputGuardrail
+    )
+
+load_dotenv()
+gemini_api_key = os.getenv("GEMINI_API_KEY")
+if not gemini_api_key:
+    raise ValueError("GEMINI_API_KEY environment variable is not set.")
+
+set_tracing_disabled(disabled=True)
+
+
+external_client = AsyncOpenAI(
+    api_key=gemini_api_key,
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+)
+
+model = OpenAIChatCompletionsModel(
+    model="gemini-2.0-flash",
+    openai_client=external_client
+)
+
+config = RunConfig(model=model, model_provider=external_client)
+
+
+# Define the output model for the guardrail agent
+class PIAICRelevanceOutput(BaseModel):
+    is_piaic_relevant: bool
+    reasoning: str
+
+
+# Create the guardrail agent to check if input is PIAIC-related
+guardrail_agent = Agent(
+    name="PIAIC_Relevance_Check",
+    instructions=(
+        "You are a guardrail agent that checks if the user's input is related to PIAIC (Presidential Initiative for Artificial Intelligence and Computing) topics, "
+        "such as Artificial Intelligence, Cloud Native Computing, Blockchain, Internet of Things (IoT), or other PIAIC courses. "
+        "Determine if the input is relevant to PIAIC. "
+        "Return a structured output with 'is_piaic_relevant' as a boolean and 'reasoning' explaining your decision."
+    ),
+    output_type=PIAICRelevanceOutput,
+)
+ 
+
+# Define the input guardrail function
+async def piaic_relevance_guardrail(
+    ctx: RunContextWrapper[None],
+    agent: Agent,
+    input: str | list,
+) -> GuardrailFunctionOutput:
+    result = await Runner.run(guardrail_agent, input, context=ctx.context)
+    # final_output = result.final_output_as(PIAICRelevanceOutput)
+    
+    return GuardrailFunctionOutput(
+        output_info=result.final_output,
+        tripwire_triggered=not result.final_output.is_piaic_relevant,
+    )
+    
+
+# Create the main PIAIC agent
+piaic_agent = Agent(
+    name="PIAIC_Assistant",
+    instructions=(
+        "You are a helpful assistant for PIAIC-related questions. "
+        "Answer questions about PIAIC courses, such as AI, Cloud Native Computing, Blockchain, IoT, or other PIAIC initiatives. "
+        "Provide accurate and concise information."
+    ),
+      input_guardrails=[InputGuardrail(guardrail_function=piaic_relevance_guardrail)],
+)
+
+try:
+    query = "What is the curriculum for PIAIC's AI course?"
+    result = Runner.run_sync(piaic_agent,query,run_config=config)
+    
+    # 1st print
+    print('\n\n',result.final_output)
+    
+    
+except OutputGuardrailTripwireTriggered:
+    print("Output Guardrail Tripped")    
+
+except InputGuardrailTripwireTriggered:
+    print("Input Guardrail Tripped")
+
+```       
