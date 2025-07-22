@@ -8,6 +8,79 @@ Guardrails run in parallel to your agents, enabling you to do checks and validat
 2. Output guardrails run on the final agent output
 
 
+
+#### test Guardrail
+```bash
+import asyncio
+import os
+from dotenv import load_dotenv
+from pydantic import BaseModel
+from agents import (
+    Agent, Runner, AsyncOpenAI, OpenAIChatCompletionsModel, RunConfig, set_tracing_disabled,
+    input_guardrail,
+    RunContextWrapper,
+    GuardrailFunctionOutput,
+    OutputGuardrailTripwireTriggered,
+    InputGuardrailTripwireTriggered
+    )
+
+load_dotenv()
+gemini_api_key = os.getenv("GEMINI_API_KEY")
+if not gemini_api_key:
+    raise ValueError("GEMINI_API_KEY environment variable is not set.")
+
+set_tracing_disabled(disabled=True)
+
+
+external_client = AsyncOpenAI(
+    api_key=gemini_api_key,
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+)
+
+model = OpenAIChatCompletionsModel(
+    model="gemini-1.5-flash",
+    openai_client=external_client
+)
+
+config = RunConfig(model=model, model_provider=external_client)
+
+
+@input_guardrail
+async def math_guardrail(
+    context: RunContextWrapper, agent: Agent, input: str 
+) -> GuardrailFunctionOutput:
+    print(f"guardrail is running with {input}")
+    return GuardrailFunctionOutput(
+        output_info="",
+        tripwire_triggered=True
+    )
+
+country_agent = Agent(
+    name="Country Guardrail check",
+    instructions="we only allow to talk about pakistan.do not answer question about any other Country or aspect",
+    input_guardrails=[math_guardrail],
+    model=model,
+)
+
+
+try:
+    query = "what is the capital of pakistan?"
+    result = Runner.run_sync(country_agent,query,run_config=config)
+    
+    # 1st print
+    print('\n\n',result.final_output)
+    print('\n\n',result.final_output.model_dump())
+    
+except OutputGuardrailTripwireTriggered:
+    print("Output Guardrail Tripped")    
+
+except InputGuardrailTripwireTriggered:
+    print("Input Guardrail Tripped")
+    
+    
+ ```
+    
+
 ```bash
 uv add pydantic
 ```
