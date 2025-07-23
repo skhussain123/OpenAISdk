@@ -1,0 +1,1 @@
+OpenAI's Agents Tracing provides a way to monitor and debug agent interactions by capturing details about the execution of tasks and function calls. The tracing system enables better understanding, logging, and analysis of agent behavior.
