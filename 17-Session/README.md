@@ -40,14 +40,8 @@ result = Runner.run_sync(
     "What's the population?",
     session=session
 )
-print(result.final_output)  # "Approximately 39 million"
+print(result.final_output) 
 ```
-
-
-
-
-
-
 
 
 ### Code Example
@@ -201,3 +195,49 @@ result2 = await Runner.run(
     session=session_2
 )
 ```
+
+
+## Session kya hai?
+
+* Session asal mein aik aisa tasawwur hai jis ki madad se har fard ya guftagu ke liye alag se chat history rakhi jati hai, takay har session mein usi makhsoos guftagu ka record ho.
+* Session implementations ke liye ek Protocol muhaiya kiya gaya hai.
+* Session khud ba khud ya aap ki hidayat par messages shamil, hazf ya saaf kar sakta hai.
+
+### Important Functions
+
+| **Function**    | **Purpose**                                                                   |
+| --------------- | ----------------------------------------------------------------------------- |
+| `get_items`     | To read the complete or limited conversation history (e.g., last 10 messages) |
+| `add_items`     | To add new messages to the conversation history                               |
+| `pop_item`      | To remove and return the most recent (last) message from the session history  |
+| `clear_session` | To completely delete the entire conversation history                          |
+
+
+### SQLiteSession
+
+* SQLiteSession is module ki default implementation hai. Yeh session data ko SQLite database mein mehfooz karti hai.
+* In-Memory: Agar aap database ka raasta na dein to yeh sari history arzi tor par yaad-dasht (memory) mein rakhta hai jo program band hotay hi khatam ho jati hai.
+* Persistent Storage: Aur agar raasta dein to file mein mustaqil tor par record rakhta hai.
+
+
+### properties aur functions:
+
+* __init__: Session bananay ka function jismein session ID, database ka raasta aur tables ke naam set kiye ja sakte hain.
+* get_items: Session ki puri ya jukhti history wapas lata hai.
+* add_items: Nai entries ko SQLite mein save karta hai.
+* pop_item: Aakhri message ko nikaal kar deta hai.
+* clear_session: Is session ki puri data history delete kar deta hai.
+* close: Database connection band kar deta hai.
+
+
+### Session ka Use Case
+* Har user ya guftagu ke liye alag session/ID honi chahiye.
+* Waqti chat ke liye in-memory SQLite behtareen hai jabke mehfooz guftagu ke liye file-wala SQLite istemal karein.
+* Ek hi database mein kai mukhtalif guftaguon ki history rakhne ki sahulat mojood hai.
+* Apni zarurat ke mutabiq agar chahen to custom backend (jaise Redis, Postgres) bhi implement kar sakte hain, bas woh Session Protocol ke mutabiq ho.
+
+OpenAI Agents SDK ka Memory module, khaas tor par SQLiteSession, stateful conversations aur chat apps ke liye kaafi aasan aur mazboot hal muhaiya karta hai, jis se agents ko har user ki guftagu yaad rakhne, retrieve karne aur clear karne ki mukammal sahulat milti hai.
+
+
+https://openai.github.io/openai-agents-python/sessions/
+https://openai.github.io/openai-agents-python/ref/memory/
