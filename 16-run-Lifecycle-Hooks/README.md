@@ -119,3 +119,195 @@ on_tool_end(
 ) -> None
 ```
 
+## Code Example RunHooks
+```bash
+import os
+import asyncio
+from dotenv import load_dotenv
+from pydantic import BaseModel
+from agents import (
+    Agent, Runner, AsyncOpenAI, OpenAIChatCompletionsModel,
+    RunConfig, RunHooks, set_tracing_disabled, function_tool
+)
+from agents.run import RunContextWrapper
+
+
+# Load environment variables
+load_dotenv()
+gemini_api_key = os.getenv("GEMINI_API_KEY")
+if not gemini_api_key:
+    raise ValueError("GEMINI_API_KEY environment variable is not set.")
+
+set_tracing_disabled(disabled=True)
+
+
+# --- Define JavaScript Tool ---
+@function_tool
+def javascript(topic: str) -> str:
+    """Explains a JavaScript topic in simple terms."""
+    return f"You asked about JavaScript topic: {topic}. Here's a basic explanation..."
+
+
+
+# --- Define Hooks ---
+class LoggingRunHooks(RunHooks):
+    async def on_agent_start(self, context: RunContextWrapper, agent: Agent):
+        print(f"[HOOK] Agent starting: {agent.name}")
+
+    async def on_agent_finish(self, context: RunContextWrapper, agent: Agent, output):
+        print(f"[HOOK] Agent ended: {agent.name} with output: {output}")
+
+    async def on_tool_end(self, context: RunContextWrapper, agent: Agent, tool, result):
+        print(f"[HOOK] Tool ended: {tool.name} returned: {result}")
+
+    async def on_handoff(self, context: RunContextWrapper, from_agent: Agent, to_agent: Agent):
+        print(f"[HOOK] Handoff from {from_agent.name} to {to_agent.name}")
+
+    async def on_error(self, context: RunContextWrapper, agent: Agent, error: Exception):
+        print(f"[HOOK] Error in agent '{agent.name}': {error}")
+
+
+
+async def main():
+    # Model setup
+    external_client = AsyncOpenAI(
+        api_key=gemini_api_key,
+        base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+    )
+
+    model = OpenAIChatCompletionsModel(
+        model="gemini-1.5-flash",
+        openai_client=external_client
+    )
+
+    config = RunConfig(
+        model=model,
+        model_provider=external_client
+    )
+    
+    Mathagent = Agent(
+        name="Math Assistant",
+        instructions="You are a helpful Math assistant",
+        model=model,
+    )
+
+    # Agent setup with JavaScript tool
+    triggle_agent = Agent(
+        name="Helpful Assistant",
+        instructions="You are a helpful assistant. Use tools when needed. if user ask math query then  Mathagent agent call",
+        model=model,
+        tools=[javascript],
+        handoffs=[Mathagent]
+    )
+
+    # Hooks
+    hooks = LoggingRunHooks()
+
+    # Try with a JavaScript-related query
+    query = "what is javascript"
+
+    try:
+        result = await Runner.run(triggle_agent, query, run_config=config, hooks=hooks)
+        print("\n\nFinal Output:", result.final_output)
+
+    except Exception as e:
+        print(f"[HOOK] Error in agent '{triggle_agent.name}': {e}")
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+## Code Example Agent Hooks
+```bash
+import os
+import asyncio
+from dotenv import load_dotenv
+from pydantic import BaseModel
+from agents import (
+    Agent, Runner, AsyncOpenAI, OpenAIChatCompletionsModel,
+    RunConfig, AgentHooks, set_tracing_disabled, function_tool
+)
+from agents.run import RunContextWrapper
+
+# Load environment variables
+load_dotenv()
+gemini_api_key = os.getenv("GEMINI_API_KEY")
+if not gemini_api_key:
+    raise ValueError("GEMINI_API_KEY environment variable is not set.")
+
+set_tracing_disabled(disabled=True)
+
+
+# --- Define JavaScript Tool ---
+@function_tool
+def javascript(topic: str) -> str:
+    """Explains a JavaScript topic in simple terms."""
+    return f"You asked about JavaScript topic: {topic}. Here's a basic explanation..."
+
+class LoggingAgentHooks(AgentHooks):
+    async def on_agent_start(self, context: RunContextWrapper, agent: Agent):
+        print(f"[HOOK] Agent starting: {agent.name}")
+
+    async def on_agent_end(self, context: RunContextWrapper, agent: Agent, output):
+        print(f"[HOOK] Agent ended: {agent.name} with output: {output}")
+
+    async def on_tool_use_start(self, context: RunContextWrapper, agent: Agent, tool, tool_input):
+        print(f"[HOOK] Tool started: {tool.name} with input: {tool_input}")
+
+    async def on_tool_use_end(self, context: RunContextWrapper, agent: Agent, tool, result):
+        print(f"[HOOK] Tool ended: {tool.name} returned: {result}")
+
+    async def on_handoff(self, context: RunContextWrapper, from_agent: Agent, to_agent: Agent):
+        print(f"[HOOK] Handoff from {from_agent.name} to {to_agent.name}")
+
+    async def on_error(self, context: RunContextWrapper, agent: Agent, error: Exception):
+        print(f"[HOOK] Error in agent '{agent.name}': {error}")
+        
+
+# --- Main App ---
+async def main():
+    external_client = AsyncOpenAI(
+        api_key=gemini_api_key,
+        base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
+    )
+
+    model = OpenAIChatCompletionsModel(
+        model="gemini-1.5-flash",
+        openai_client=external_client
+    )
+
+    config = RunConfig(
+        model=model,
+        model_provider=external_client
+    )
+
+    # Math agent
+    math_agent = Agent(
+        name="Math Assistant",
+        instructions="You are a helpful Math assistant",
+        model=model
+    )
+
+    # Primary agent with tool + handoff
+    main_agent = Agent(
+        name="Helpful Assistant",
+        instructions="You are a helpful assistant. Use tools when needed. If user asks a math question, call the Math Assistant.",
+        model=model,
+        tools=[javascript],
+        handoffs=[math_agent]
+    )
+
+    hooks = LoggingAgentHooks()
+    query = "what is 2+2" 
+
+    try:
+        result = await Runner.run(main_agent, query, run_config=config, hooks=hooks)
+        print("\n\nFinal Output:", result.final_output)
+
+    except Exception as e:
+        print(f"[HOOK] Error in agent '{main_agent.name}': {e}")
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
+```
