@@ -32,17 +32,16 @@ Jab humara agent loop mein continuously tool calls ya LLM calls kar raha hota ha
 🔹 Nature: Asynchronous (await karna parta hai).
 🔹 Use-case: Jab aapko full result aik hi baar mein chahiye ho.
 
-
-### 2. runner.stream(prompt)
-🔹 Purpose: Prompt bhejna aur real-time streaming mein response lena.
-🔹 Nature: Asynchronous stream (token/token ya chunk/chunk mein response aata hai).
-🔹 Use-case: Chat apps, terminals, jahan user ko live output chahiye hota hai.
-
-
-### 3. runner.run_sync(prompt)
+### 2. runner.run_sync(prompt)
 🔹 Purpose: Same as run(), but sync code ke liye.
 🔹 Nature: Synchronous (without async/await).
 🔹 Use-case: Jab aap ka code async nahi hai (like simple scripts or CLI).
+
+
+### 3. runner.stream(prompt)
+🔹 Purpose: Prompt bhejna aur real-time streaming mein response lena.
+🔹 Nature: Asynchronous stream (token/token ya chunk/chunk mein response aata hai).
+🔹 Use-case: Chat apps, terminals, jahan user ko live output chahiye hota hai.
 
 
 | Method              | Async / Sync | Streaming | Output Type     | Use When                             |
@@ -52,7 +51,15 @@ Jab humara agent loop mein continuously tool calls ya LLM calls kar raha hota ha
 | `runner.run_sync()` | Sync         | ❌         | Full message    | When not using async (basic scripts) |
 
 
+#### runner.run_sync vs runner.run
+1. runner.run() ek asynchronous function ko run karta hai runner ke context ke andar.
+Isse await ke saath call kiya jata hai, aur yeh async code ke liye hota hai.
+2. Same as run(), but sync code ke liye. Nature: Synchronous (without async/await).
 
+#### Key Points
+* await ko humesha async funciton ke under use kia jata hain
+* async function ko call krwany ke liye await lagana pharta hain.
+* async.io ki library async function ko run krny ke liye use hoti hain.
 
 ### run_streamed
 run_streamed() is a higher-level helper in the OpenAI Agents SDK that gives you real-time streaming (like stream()), but with the final assembled response object at the end.
@@ -132,4 +139,126 @@ async def main():
 asyncio.run(main())
 
 print("=== Run complete ===")
+```
+
+#### Type of Event
+* agent_updated_stream_event
+* raw_response_event
+* run_item_stream_event
+
+
+
+### 1. Raw response events
+RawResponsesStreamEvent are raw events passed directly from the LLM. They are in OpenAI Responses API format, which means each event has a type (like response.created, response.output_text.delta, etc) and data. These events are useful if you want to stream response messages to the user as soon as they are generated.
+
+```bash
+result = Runner.run_streamed(agent, input="Please tell me 5 jokes.")
+    async for event in result.stream_events():
+        if event.type == "raw_response_event" and isinstance(event.data, ResponseTextDeltaEvent):
+            print(event.data.delta, end="", flush=True)
+```            
+
+
+### 2. Run item events 
+```bash
+ elif event.type == "run_item_stream_event":   
+            if event.item.type == "tool_call_item":
+                print("-- Tool was called")
+                continue
+            elif event.item.type == "tool_call_output_item":
+                # print(f"-- Tool output: {event.item.output}")
+                continue
+            elif event.item.type == "message_output_item":
+                # print(event.item.raw_item.content[0].text)
+                # print(ItemHelpers.text_message_output(event.item))
+                continue
+```                
+
+### 3. agent events
+```bash
+ elif event.type == "agent_updated_stream_event":
+        #    print(event)
+           continue
+```
+
+### Other Code Example 
+```bash
+import os
+import asyncio
+from dotenv import load_dotenv
+from pydantic import BaseModel
+from agents import (
+    Agent, Runner, AsyncOpenAI, OpenAIChatCompletionsModel,
+    RunConfig,ItemHelpers, function_tool
+)
+import requests
+
+from openai.types.responses import ResponseTextDeltaEvent
+
+load_dotenv()
+
+
+gemini_api_key = os.getenv("GEMINI_API_KEY")
+if not gemini_api_key:
+    raise ValueError("GEMINI_API_KEY environment variable is not set.")
+
+
+external_client = AsyncOpenAI(
+    api_key=gemini_api_key,
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
+)
+
+model = OpenAIChatCompletionsModel(
+    model="gemini-1.5-flash",
+    openai_client=external_client
+)
+
+config = RunConfig(
+    model=model,
+    model_provider=external_client
+)
+
+
+@function_tool
+def get_weather(city:str)->str:
+    """
+    Get the current weather for a given city.
+    """
+    result=requests.get(f"http://api.weatherapi.com/v1/current.json?key=8e3aca2b91dc4342a1162608252604&q={city}")
+    data=result.json()
+    return f"The current weather in {city} is {data['current']['temp_c']}°C with {data['current']['condition']['text']}."
+
+
+async def main():
+    
+    agent = Agent(
+    name="Weather Agent",
+    instructions="You are a weather agent. You can provide weather information and forecasts.",
+    model=model,
+    tools=[get_weather]
+    )
+
+    result = Runner.run_streamed(agent, input="what is weather in karachi.")
+    async for event in result.stream_events():
+       if event.type == "raw_response_event" and isinstance(event.data, ResponseTextDeltaEvent):
+            # print(event.data.delta, end="", flush=True)
+            continue
+       elif event.type == "agent_updated_stream_event":
+        #    print(event)
+           continue
+       
+       elif event.type == "run_item_stream_event":   
+            if event.item.type == "tool_call_item":
+                print("-- Tool was called")
+                continue
+            elif event.item.type == "tool_call_output_item":
+                # print(f"-- Tool output: {event.item.output}")
+                continue
+            elif event.item.type == "message_output_item":
+                # print(event.item.raw_item.content[0].text)
+                # print(ItemHelpers.text_message_output(event.item))
+                continue
+
+
+asyncio.run(main())
 ```
