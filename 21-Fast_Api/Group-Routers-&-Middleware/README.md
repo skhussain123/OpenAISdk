@@ -9,6 +9,10 @@ Instead of defining all endpoints in the main app, you can:
 * Apply common dependencies, prefixes, or tags to a group of routes.
 
 
+* Swagger openai ke name pr kam krta ha.
+* fast api openai ka standart ka use krke json sepcification khud se bana deta ha or swagger uska use krke
+ui bana deta hun jaha hum api test kr sakty hain. jasy swagger doc bhi kaha jata ha
+
 ### Grouping Routes with Routers
 FastAPI provides APIRouter to modularize routes.
 
