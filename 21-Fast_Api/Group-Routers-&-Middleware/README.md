@@ -1,6 +1,6 @@
 
 
-## What is APIRouter?
+## 1. What is APIRouter?
 APIRouter is a class provided by FastAPI to help modularize your routes.
 
 Instead of defining all endpoints in the main app, you can:
@@ -34,6 +34,23 @@ app.include_router(router, prefix="/api")
 ```
 * The prefix argument adds a common prefix to all routes in the router.
 
+
+## 2. Route Dependencies
+* Dependencies can be added to routes to perform shared logic.
+
+```bash
+from fastapi import Depends
+
+def common_dependency():
+    return {"key": "value"}
+
+@app.get("/items")
+def read_items(data: dict = Depends(common_dependency)):
+    return data
+```
+
+## 3. Middleware and Route Preprocessing
+* Middleware can intercept requests/responses before they reach the route.
 
 
 
