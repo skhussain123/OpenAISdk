@@ -11,7 +11,6 @@ The Agents SDK includes built-in tracing, collecting a comprehensive record of e
 ![Alt text](../15-Tracing/tracing_flow.png)
 
 
-
 ### Traces and spans
 Traces represent a single end-to-end operation of a "workflow". They're composed of Spans. Traces have the following properties:
 
